@@ -13,15 +13,19 @@ class Database():
         self.conn.commit()
 
     def get_all(self):
-        cursor = self.conn.execute("SELECT id, title, content FROM note")
-        lista = []
-        for linha in cursor:
-            id = linha[0]
-            title = linha[1]
-            content = linha[2]
-            n = Note(id=id, title=title, content=content)
-            lista.append(n)
-        return lista
+        self.cur = self.conn.execute("SELECT id, title, content FROM note")
+        notas = []
+        for linha in self.cur:
+            id, title, content = linha
+            notas.append(Note(id=id, title=title, content=content))
+        return  notas
+
+    def update(self,entry):
+        self.cur.execute("UPDATE note SET title = ?, content = ? WHERE id = ?", (entry.title,entry.content,entry.id))
+        self.conn.commit()
+    def delete(self,note_id):
+        self.cur.execute("DELETE FROM note WHERE id = ?", (note_id,))
+        self.conn.commit()
 
 
 @dataclass
